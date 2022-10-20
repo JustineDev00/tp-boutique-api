@@ -4,15 +4,23 @@ require_once 'autoload.php';
 
 
 
- echo nl2br($_SERVER['REQUEST_METHOD']  . $_SERVER['REQUEST_URI']); 
- $dbs = new Controllers\DatabaseController;
-//  echo nl2br($dbs->action);
+ echo nl2br($_SERVER['REQUEST_METHOD']  . $_SERVER['REQUEST_URI'] . "\n"); 
+ 
+ 
 
-//  $abs = new Controllers\ArticleController;
-//  echo nl2br($abs->action);
-
+$dbc = new Controllers\DatabaseController;
 
 
+ 
+//  echo nl2br($dbc->action);
+
+//  $abc = new Controllers\ArticleController;
+//  echo nl2br($abc->action);
+
+
+
+$dbs = new Services\DatabaseService;
+echo "end of program";
 
 
 ?>
