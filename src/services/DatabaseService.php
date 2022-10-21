@@ -43,14 +43,20 @@ class DatabaseService
         {
         $statment = $this->connect()->prepare($sql);
         $result = $statment->execute($params);
-        return (object)['result' => $result, 'statment' => $statment];
+        return (object)['result' => $result, 'statement' => $statement];
         }
 /**
 * Retourne la liste des tables en base de données sous forme de tableau
 */
     public static function getTables() : array
     {
-//...
+        $sql = "SELECT table_name from information_schema.tables WHERE table_schema = ?";
+        $params = $table;
+        $resp = $this->query($sql, [$table]);
+        if($resp->result && $resp->statement->rowCount() > 0){
+            $row = $resp["statement"];
+        }
+
     }
 }
 
