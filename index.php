@@ -1,7 +1,7 @@
 <?php
 
 $env = 'dev';
-$_ENV = json_decode(file_get_contents("src/Configs/" . $env . ".config.json"), true);
+$_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
 $_ENV['env'] = $env;
 
 require_once 'autoload.php';
