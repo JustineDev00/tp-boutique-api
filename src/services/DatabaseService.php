@@ -69,7 +69,7 @@ class DatabaseService
         $sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ?";       
         $resp = $dbs->query($sql, ['boutique']);
         
-        echo json_encode($resp);
+        // echo json_encode($resp);
         // CONSOLE.LOG les datas !
         
         $tables = $resp->statment->fetchAll(PDO::FETCH_COLUMN);
