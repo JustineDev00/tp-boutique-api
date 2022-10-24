@@ -60,9 +60,8 @@ class DatabaseService
         $params = "tp-boutique";
         $resp = $dbs->query($sql, [$params]);
         if($resp->result && $resp->statement->rowCount() > 0){
-            $row = $resp->statement->fetchAll(PDO::FETCH_CLASS);
-            $list = array_map(fn($value) => $value->table_name, $row);
-            return $list;
+            $row = $resp->statement->fetchAll(PDO::FETCH_COLUMN);
+            return $row;
             
         }
 
