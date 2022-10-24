@@ -1,26 +1,26 @@
 <?php
 
+$env = 'dev';
+$_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
+$_ENV['env'] = $env;
+
 require_once 'autoload.php';
 
+use helpers\HttpRequest;
+use helpers\HttpResponse;
+use services\DatabaseService;
+use controllers\DatabaseController;
 
+$request = HttpRequest::instance();
+$tables = DatabaseService::getTables();
 
- echo nl2br($_SERVER['REQUEST_METHOD']  . $_SERVER['REQUEST_URI'] . "\n"); 
- 
- 
+if (empty($request->route) || !in_array($request->route[0], $tables)) {
+    HttpResponse::exit();
+}
 
-$dbc = new Controllers\DatabaseController;
+$controller = new DatabaseController($request);
 
+// $result = $controller->execute();
+// HttpResponse::send(["data"=>$result]);
 
- 
-//  echo nl2br($dbc->action);
-
-//  $abc = new Controllers\ArticleController;
-//  echo nl2br($abc->action);
-
-
-
-$dbs = new Services\DatabaseService;
-echo "end of program";
-
-
-?>
+HttpResponse::send(["message" => "La table " . $request->route[0] . " existe."]);
