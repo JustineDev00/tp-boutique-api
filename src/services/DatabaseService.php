@@ -6,6 +6,8 @@ class DatabaseService
 {
     public string $table;
     public string $pk;
+
+    
     public function __construct(string $table = null)
 {
     $this->table = $table;
@@ -39,6 +41,7 @@ class DatabaseService
             }
             return self::$connection;
     }
+
     public function query(string $sql, array $params = []) : object
         {
         $statement = $this->connect()->prepare($sql);
@@ -66,8 +69,23 @@ class DatabaseService
         }
 
     }
+
+    public function selectWhere(string $where='1', array $bind = []) :  array 
+    {
+        $sql = "SELECT * from $this->table WHERE $where";
+        $params = $bind;
+        $resp = $this->query($sql, $params);
+        $row = $resp->statement->fetchAll(PDO::FETCH_GROUP);
+        return $row;
+
+
+    }
+
 }
 
-    
 
+
+
+
+        
 ?>
