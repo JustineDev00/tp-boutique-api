@@ -1,4 +1,4 @@
-<?php namespace helpers;
+<?php namespace Helpers;
 
 class HttpRequest{
 
