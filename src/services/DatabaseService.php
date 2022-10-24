@@ -8,13 +8,13 @@ use PDOException;
 class DatabaseService
 
 {
-    public string $table;
+    public ?string $table;
     public string $pk;
 
-    public function __construct(string $table = null)
+    public function __construct(?string $table = null)
     {
         $this->table = $table;
-        $this->pk = "id_" . $this->table;
+        $this->pk = "Id_" . $this->table;
     }
 
     private static ?PDO $connection = null;
@@ -39,8 +39,7 @@ class DatabaseService
                         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
                     )
                 );
-            } 
-            catch (PDOException $e) {
+            } catch (PDOException $e) {
                 die("Erreur de connexion à la base de données :
                 $e->getMessage()");
             }
@@ -53,9 +52,9 @@ class DatabaseService
 
     public function query(string $sql, array $params = []): object
     {
-        $statment = $this->connect()->prepare($sql);
-        $result = $statment->execute($params);
-        return (object)['result' => $result, 'statment' => $statment];
+        $statement = $this->connect()->prepare($sql);
+        $result = $statement->execute($params);
+        return (object)['result' => $result, 'statement' => $statement];
     }
 
 
@@ -63,17 +62,20 @@ class DatabaseService
      * Retourne la liste des tables en base de données sous forme de tableau
      */
 
-    public static function getTables() : array
+    public static function getTables(): array
     {
-        $dbs = new DatabaseService("");
-        $sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ?";       
+        $dbs = new DatabaseService();
+        $sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ?";
         $resp = $dbs->query($sql, ['boutique']);
-        
-        // echo json_encode($resp);
-        // CONSOLE.LOG les datas !
-        
-        $tables = $resp->statment->fetchAll(PDO::FETCH_COLUMN);
+        $tables = $resp->statement->fetchAll(PDO::FETCH_COLUMN);
         return $tables;
     }
 
+    public function selectWhere(string $where = "1", array $bind = []): array
+    {
+        $sql = "SELECT * FROM $this->table WHERE $where;";
+        $resp = $this->query($sql, $bind);
+        $rows = $resp->statement->fetchAll(PDO::FETCH_CLASS);
+        return $rows;
+    }
 }
