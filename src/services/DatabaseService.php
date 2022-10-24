@@ -75,7 +75,7 @@ class DatabaseService
         $sql = "SELECT * from $this->table WHERE $where";
         $params = $bind;
         $resp = $this->query($sql, $params);
-        $row = $resp->statement->fetchAll(PDO::FETCH_GROUP);
+        $row = $resp->statement->fetchAll(PDO::FETCH_CLASS);
         return $row;
 
 

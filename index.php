@@ -20,4 +20,5 @@ $controller = new DatabaseController($request);
 //$result = $controller->execute();
 //HttpResponse::send(["data"=>$result]);
 // HttpResponse::send(["message"=>"La table ".$request->route[0]." existe."]);
-HttpResponse::send([$controller->execute()]);
+$result = $controller->execute();
+HttpResponse::send(["data" => $result]);

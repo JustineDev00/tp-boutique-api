@@ -22,12 +22,12 @@ class DatabaseController{
         }
 
         if($request->method == "GET"){
-            $this->action = json_encode(["data" => self::get()]);
+            $this->action = json_encode(self::get());
         }
 
     }
     public function execute() {
-        return $this->action;
+        return json_decode($this->action);
 
     }
 
