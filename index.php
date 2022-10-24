@@ -6,17 +6,21 @@ $_ENV['env'] = $env;
 
 require_once 'autoload.php';
 
-use Helpers\HttpRequest;
-use Helpers\HttpResponse;
-use Services\DatabaseService;
-use Controllers\DatabaseController;
+use helpers\HttpRequest;
+use helpers\HttpResponse;
+use services\DatabaseService;
+use controllers\DatabaseController;
 
 $request = HttpRequest::instance();
 $tables = DatabaseService::getTables();
-if(empty($request->route) || !in_array($request->route[0], $tables)){
+
+if (empty($request->route) || !in_array($request->route[0], $tables)) {
     HttpResponse::exit();
 }
+
 $controller = new DatabaseController($request);
-//$result = $controller->execute();
-//HttpResponse::send(["data"=>$result]);
-HttpResponse::send(["message"=>"La table ".$request->route[0]." existe."]);
+
+// $result = $controller->execute();
+// HttpResponse::send(["data"=>$result]);
+
+HttpResponse::send(["message" => "La table " . $request->route[0] . " existe."]);
