@@ -35,11 +35,11 @@ réécrite
         }
         if (!file_exists($tableFile)) {
             $constList = array_map(function ($table) {
-                $table = "const " . strtoupper($table) . "= \"" . $table . "\";";
+                $table = "const " . strtoupper($table) . " = \"" . $table . "\";";
                 return $table;
             }, $tables);
-            $constString = implode("\n", $constList);
-            $fileContent = "<?php namespace Schemas; \n class Table {" . $constString . "}";
+            $constString = implode("\n\t", $constList);
+            $fileContent = "<?php \n namespace Schemas; \n\n class Table {\n\n\t" . $constString . "\n}";
             file_put_contents($tableFile, $fileContent);
             
         }
