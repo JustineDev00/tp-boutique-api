@@ -6,7 +6,7 @@ use Services\DatabaseService;
 
 class DatabaseController{
     private string $table;
-    private string $pk; //???????
+    private string $pk; //nom de colonne
     private ?string $id;
     private array $body;
     private string $action;
