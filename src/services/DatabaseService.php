@@ -66,7 +66,7 @@ class DatabaseService
     {
         $dbs = new DatabaseService();
         $sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ?";
-        $resp = $dbs->query($sql, ['boutique']);
+        $resp = $dbs->query($sql, ['tp-boutique']);
         $tables = $resp->statement->fetchAll(PDO::FETCH_COLUMN);
         return $tables;
     }
