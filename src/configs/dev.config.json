@@ -2,7 +2,7 @@
     "db": {
         "host": "localhost",
         "port": "3306",
-        "dbName": "boutique",
+        "dbName": "db_shop_cuisine",
         "user": "root",
         "pass": ""
     }
