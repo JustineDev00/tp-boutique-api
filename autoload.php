@@ -9,7 +9,7 @@
 //La variable className n'a pas besoin d'être fournie, c'est la fonction spl_autoloader_register() qui va chercher les classes ou fonctions en fonction du code (ex : dans index.php le fichier ArticleController.php n'est recherché par l'autoloader que lorsqu'on atteint la ligne  new ArticleController)
 
 function loadFiles($className){
-    $filePath = "src\\". lcfirst($className) . ".php";
+    $filePath = "src\\". strtolower($className) . ".php";
     if(file_exists($filePath)){
         require_once $filePath;
     }
