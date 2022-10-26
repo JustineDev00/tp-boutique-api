@@ -78,4 +78,17 @@ class DatabaseService
         $rows = $resp->statement->fetchAll(PDO::FETCH_CLASS);
         return $rows;
     }
+
+
+
+    /**
+    * Retourne la liste des colonnes d'une table (son schéma)
+    */
+    public function getSchemas(){
+        $schemas = [];
+        $sql = "SHOW FULL COLUMNS FROM $this->table";
+        $resp = $this->query($sql);
+        $schemas = $resp->statement->fetchAll(PDO::FETCH_COLUMN);
+        return $schemas;
+    }
 }

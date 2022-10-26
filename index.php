@@ -12,6 +12,13 @@ use Services\DatabaseService;
 use Controllers\DatabaseController;
 use Tools\Initializer;
 
+//test getSchemas();
+$dbs = new DatabaseService("role");
+$result = $dbs->getSchemas();
+if($result) {
+    HttpResponse::send(["schemas" => $result], 200);
+}
+
 
 //Lorsque qu'on fait une requête avec init on initialise le fichier (on le crée ou on le recrée si init/force)
 $request = HttpRequest::instance();
@@ -39,6 +46,8 @@ if ($result) {
     HttpResponse::send(["data" => $result], 200);
 }
 
+
+//Sprint 4 : test de la fonction getSchemas
 
 
 
