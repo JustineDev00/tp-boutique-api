@@ -19,7 +19,8 @@ class Initializer
         $isForce = count($request->route) > 1 && $request->route[1] == 'force';
 
         try {
-            self::writeTableFile();
+            $arrayOfTables = self::writeTableFile();
+            self::writeSchemasFiles($arrayOfTables, $isForce);
         } catch (Exception $e) {
             return false;
         }
@@ -50,10 +51,10 @@ class Initializer
 
         if (!file_exists($tableFile)) {
 
-            $fileContent = "<?php namespace Schemas; class Table{";
+            $fileContent = "<?php \r\rnamespace Schemas; \r\rclass Table { \r";
             for ($i = 0; $i < count($tables); ++$i) {
                 $value = $tables[$i];
-                $fileContent .= "const " . strtoupper($value) . " = " . "'" . $value . "';";
+                $fileContent .= "    const " . strtoupper($value) . " = " . "'" . $value . "';\r";
             }
             $fileContent .= "}";
 
@@ -64,5 +65,48 @@ class Initializer
         }
 
         return $tables;
+    }
+
+    /**
+     * Génère une classe schema (crée le fichier) pour chaque table présente dans $tables
+     * décrivant la structure de la table à l'aide de DatabaseService getSchema()
+     * Si $isForce vaut false et que la classe existe déjà, elle n'est pas réécrite
+     * Si $isForce vaut true, la classe est supprimée (si elle existe) et réécrite
+     */
+
+    private static function writeSchemasFiles(array $tables, bool $isForce): void
+    {
+        foreach ($tables as $table) {
+
+            $className = ucfirst($table);
+            $schemaFile = "src/Schemas/$className.php";
+
+            $dbs = new DatabaseService();
+            $schema = $dbs->getSchema($table);
+            
+            if (file_exists($schemaFile) && $isForce) {
+
+                $test = unlink($schemaFile);
+                if ($test == false) {
+                    throw new Exception("Le fichier n'a pas pu être supprimé.");
+                }
+            }
+            if (!file_exists($schemaFile)) {
+
+                $fileContent = "<?php \r\rnamespace Schemas; \r\rclass $className {\r    const COLUMNS = [\r";
+                for ($i = 0; $i < count($schema); ++$i) {
+                    $schemaTypesArray = $schema[$i];
+                    $typesValues = array_values($schemaTypesArray);
+
+                    $fileContent .= "        '" . strtolower($typesValues[0]) . "'" . ' => ' . "['type'" . " => " . "'" . $typesValues[1] . "', " . "'" . 'nullable' . "'" . ' => ' . "'" . $typesValues[3] . "', " . "'" . 'default' . "'" . ' => ' . "'" . $typesValues[5] . "'], \r";
+                }
+                $fileContent .= "    ];\r}";
+
+                $test = file_put_contents($schemaFile, $fileContent);
+                if ($test == false) {
+                    throw new Exception("Le fichier n'a pas pu être écrit.");
+                }
+            }
+        }
     }
 }
