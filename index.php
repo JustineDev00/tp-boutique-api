@@ -12,13 +12,17 @@ use Services\DatabaseService;
 use Controllers\DatabaseController;
 use Tools\Initializer;
 
-//test getSchemas();
-$dbs = new DatabaseService("role");
-$result = $dbs->getSchemas();
-if($result) {
-    HttpResponse::send(["schemas" => $result], 200);
-}
+// test getSchemas();
+// $dbs = new DatabaseService("role");
+// $result = $dbs->getSchemas();
+// if($result) {
+//     HttpResponse::send(["schemas" => $result], 200);
+// }
 
+//test writeSchemaFiles()
+
+// $tables = DatabaseService::getTables();
+// $test = Initializer::writeSchemasFiles($tables, true);
 
 //Lorsque qu'on fait une requête avec init on initialise le fichier (on le crée ou on le recrée si init/force)
 $request = HttpRequest::instance();

@@ -86,9 +86,9 @@ class DatabaseService
     */
     public function getSchemas(){
         $schemas = [];
-        $sql = "SHOW FULL COLUMNS FROM $this->table";
+        $sql = "SHOW COLUMNS FROM $this->table";
         $resp = $this->query($sql);
-        $schemas = $resp->statement->fetchAll(PDO::FETCH_COLUMN);
+        $schemas = $resp->statement->fetchAll(PDO::FETCH_CLASS);
         return $schemas;
     }
 }
