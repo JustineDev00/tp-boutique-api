@@ -4,6 +4,7 @@ namespace Tools;
 
 use Services\DatabaseService;
 use Helpers\HttpRequest;
+use Models\Model;
 use Exception;
 
 class Initializer
@@ -21,6 +22,8 @@ class Initializer
         try {
             $arrayOfTables = self::writeTableFile();
             self::writeSchemasFiles($arrayOfTables, $isForce);
+            $model = new Model("account", []);
+
         } catch (Exception $e) {
             return false;
         }
@@ -41,7 +44,7 @@ class Initializer
         $tables = DatabaseService::getTables();
         $tableFile = "src/schemas/table.php";
 
-        if (file_exists($tableFile) && $isForce = true) {
+        if (file_exists($tableFile) && $isForce) {
 
             $test = unlink($tableFile);
             if ($test == false) {
@@ -78,7 +81,7 @@ class Initializer
     {
         foreach ($tables as $table) {
 
-            $className = ucfirst($table);
+            $className = $table;
             $schemaFile = "src/Schemas/$className.php";
 
             $dbs = new DatabaseService();
@@ -93,9 +96,10 @@ class Initializer
             }
             if (!file_exists($schemaFile)) {
 
-                $fileContent = "<?php \r\rnamespace Schemas; \r\rclass $className {\r    const COLUMNS = [\r";
+                $fileContent = "<?php \r\rnamespace Schemas; \r\rclass " . ucfirst($className) . "{\r    const COLUMNS = [\r";
                 for ($i = 0; $i < count($schema); ++$i) {
                     $schemaTypesArray = $schema[$i];
+                    
                     $typesValues = array_values($schemaTypesArray);
 
                     $fileContent .= "        '" . strtolower($typesValues[0]) . "'" . ' => ' . "['type'" . " => " . "'" . $typesValues[1] . "', " . "'" . 'nullable' . "'" . ' => ' . "'" . $typesValues[3] . "', " . "'" . 'default' . "'" . ' => ' . "'" . $typesValues[5] . "'], \r";
