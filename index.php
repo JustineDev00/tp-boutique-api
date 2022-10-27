@@ -54,10 +54,11 @@ $testData = $testModel->data();
 
 //sprint 5 : test de la classe Model List;
 
-$testModelList = new ModelList("article", [['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]);
-$testModelListData = $testModelList->data();
-$testModelListIds = $testModelList->idList();
+$testModelList = new ModelList("article", [['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]); //créer un tableau de modèles d'une table donnée;
+$testModelListData = $testModelList->data(); //convertit la liste de modèles en tableau;
+$testModelListIds = $testModelList->idList(); //affiche la liste des ids des modèles de la liste;
 $testFindModel = $testModelList->findById($testModelListIds[0]);
+//sélectionne dans la liste des modèles le modèle dont l'Id est égal à l'Id passée en paramètres;
 echo(json_encode($testFindModel->data()));
 
 
