@@ -11,21 +11,10 @@ use Helpers\HttpResponse;
 use Services\DatabaseService;
 use Controllers\DatabaseController;
 use Models\Model;
+use Models\ModelList;
 use Tools\Initializer;
 
-// test getSchemas();
-// $dbs = new DatabaseService("role");
-// $result = $dbs->getSchemas();
-// if($result) {
-//     HttpResponse::send(["schemas" => $result], 200);
-// }
 
-//test writeSchemaFiles()
-
-// $tables = DatabaseService::getTables();
-// $test = Initializer::writeSchemasFiles($tables, true);
-
-//Lorsque qu'on fait une requête avec init on initialise le fichier (on le crée ou on le recrée si init/force)
 $request = HttpRequest::instance();
 if ($_ENV['env'] == "dev" && !empty($request->route) && $request->route[0] == 'init') {
     if (Initializer::start($request)) {
@@ -35,6 +24,7 @@ if ($_ENV['env'] == "dev" && !empty($request->route) && $request->route[0] == 'i
 }
 
 //Après l'initialisation si elle a eu lieu, le fichier regarde si la valeur de $request->route[0] correspond à une constante qui a été définie dans la classe Schemas/Tables;
+
 if (!empty($request->route)) {
     $const = strtoupper($request->route[0]);
     $key = "Schemas\Table::$const";
@@ -54,38 +44,24 @@ $result = $controller->execute();
 //sprint 5 : test de getSchema() de la classe Model
 $result = Model::getSchema("role");
 // $testGUID = Model::nextGuid();
+
+
 //sprint 5 : test de la classe Model
 
 $testModel = new Model("article", ['title' => 'moule coeur', 'matiere' => 'silicone']);
 $testData = $testModel->data();
 
 
+//sprint 5 : test de la classe Model List;
 
-//Sprint 4 : test de la fonction getSchemas
-
-
-
-// $tables = DatabaseService::getTables(); //remplacée par lecture de la classe Schemas/Table;
-
-
-//Test 1 : fichier existe + bool true => OK
-// $tableFile = Initializer::writeTableFile(true);
-//Test 2 : fichier existe + bool false =>  OK
-// $tableFile = Initializer::writeTableFile(false);
-//Test 3 : fichier n'existe pas + bool true => OK
-// $tableFile = Initializer::writeTableFile(true);
-//Test 4 : fichier n'existe pas + bool false => OK
+$testModelList = new ModelList("article", [['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]);
+$testModelListData = $testModelList->data();
+$testModelListIds = $testModelList->idList();
+$testFindModel = $testModelList->findById($testModelListIds[0]);
+echo(json_encode($testFindModel->data()));
 
 
 
-// if (empty($request->route) || !in_array($request->route[0], $tables)) {
-//     HttpResponse::exit();
-// }
-// $tableFile = Initializer::start($request);
 
-// $controller = new DatabaseController($request);
 
-// $result = $controller->execute();
-// HttpResponse::send(["data"=>$result]);
 
-// HttpResponse::send(["message" => "La table " . $request->route[0] . " existe."]);

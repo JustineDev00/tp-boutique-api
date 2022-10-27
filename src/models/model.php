@@ -48,7 +48,7 @@ class Model
 
     private static function nextGuid(int $length = 16): string
     {
-        $time = microtime(true);
+        $time = microtime(true) * 10000;
         $guid = base_convert($time, 10, 32);
         while (strlen($guid) < $length) {
             $random = base_convert(random_int(0, 10), 10, 32);
@@ -72,11 +72,14 @@ class Model
     public function data(): array
     {
         $data = (array) clone $this;  //$data est de type array, on ne récupère que les propriétés de $this dans cet array
-        foreach ($data as $key) {  //On passe par toutes les clés de l'array $data;
-            if (!isset($this->schema[$key])) { //si une des clés n'existe pas dans le schéma correspondant...
-                unset($data[$key]); //... alors cette clé est supprimée de $data;
+        $dataClean = [];
+        foreach ($this->schema as $key => $value) {  //On passe par toutes les clés du schéma
+            if (array_key_exists($key, $data)) { //si la clé du schéma existe dans l'array $data
+                $dataClean[$key] = $data[$key];
+                
+            ; //... alors cette clé est ajoutée dans $dataClean
             }
         }
-        return $data;
+        return $dataClean; //$dataClean ne contient que des paires clés-valeurs pour lesquelles les clés existent dans $this->schema;
     }
 }
