@@ -80,10 +80,11 @@ réécrite
                     $dbs = new DatabaseService($table);
                     $rows = $dbs->getSchemas();
                     foreach($rows as $row){
-                        $line = "\"$row->Field\" => [\"type\" => \"$row->Type\", \"nullable\" =>  \" $row->Null\", \"default\" => \"$row->Default\"],";
+                        $row->Null = $row->Null == "YES" ? 1 : 0;
+                        $line = "\"$row->Field\" => [\"type\" => \"$row->Type\", \"nullable\" =>  " .  $row->Null. ", \"default\" => \"$row->Default\"],";
                         $constString .= $line;
                     }
-                    $fileContent = "<?php \n namespace Schemas; \n\n class $table {\n\n\t const COLUMNS = [" . trim($constString, ",") . "];\n}";
+                    $fileContent = "<?php \n namespace Schemas; \n\n class $className {\n\n\t const COLUMNS = [" . trim($constString, ",") . "];\n}";
                     file_put_contents($schemaFile, $fileContent);
                 }
                 catch(Exception $e){

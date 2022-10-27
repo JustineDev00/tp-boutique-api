@@ -10,6 +10,7 @@ use Helpers\HttpRequest;
 use Helpers\HttpResponse;
 use Services\DatabaseService;
 use Controllers\DatabaseController;
+use Models\Model;
 use Tools\Initializer;
 
 // test getSchemas();
@@ -46,9 +47,18 @@ else {
 }
 $controller = new DatabaseController($request); //traitement de la requête;
 $result = $controller->execute();
-if ($result) {
-    HttpResponse::send(["data" => $result], 200);
-}
+// if ($result) {
+//     HttpResponse::send(["data" => $result], 200);
+// }
+
+//sprint 5 : test de getSchema() de la classe Model
+$result = Model::getSchema("role");
+// $testGUID = Model::nextGuid();
+//sprint 5 : test de la classe Model
+
+$testModel = new Model("article", ['title' => 'moule coeur', 'matiere' => 'silicone']);
+$testData = $testModel->data();
+
 
 
 //Sprint 4 : test de la fonction getSchemas

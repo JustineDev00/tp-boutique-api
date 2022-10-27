@@ -1,7 +1,7 @@
 <?php 
  namespace Schemas; 
 
- class role {
+ class Role {
 
-	 const COLUMNS = ["Id_Role" => ["type" => "varchar(255)", "nullable" =>  " NO", "default" => ""],"title" => ["type" => "varchar(50)", "nullable" =>  " YES", "default" => ""],"is_deleted" => ["type" => "varchar(50)", "nullable" =>  " YES", "default" => ""]];
+	 const COLUMNS = ["Id_Role" => ["type" => "varchar(255)", "nullable" =>  0, "default" => ""],"title" => ["type" => "varchar(50)", "nullable" =>  1, "default" => ""],"is_deleted" => ["type" => "varchar(50)", "nullable" =>  1, "default" => ""]];
 }
