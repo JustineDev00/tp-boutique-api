@@ -15,18 +15,9 @@ class Model
     {
         // Le param $json correspond aux données en entrée
         // (ex pour la table role : ["id_role"=>"...", "title"=>"", ...])
-        // si $json ne contient pas d'id, crée un nouvel id (nextGuid)
 
-        // 3. ajoute à l'instance toutes les colonnes contenues dans $json 
-        // si elles sont présentes dans le schéma
-        // 4. complète le contenu de $json pour obtenir une instance 
-        // ayant les mêmes propriétés que le schéma (avec des valeurs par défaut si elles sont définit dans le schéma)
-        // (ex pour la table role, $json vaut ["title"=>"seller", "weight"=>2, "nimportequoi"=>"..."])
 
-        // seul title et weight existent dans la table (schema),
-        // ils sont donc ajoutés comme variable à l'instance
-        // n'importe quoi n'est pas gardé,
-        // $this->title = "seller" et $this->weight = 2
+
 
         // il manque les colonnes id_role et is_deleted
         // id_role étant manquant, on le crée avec nextGuid,
@@ -44,15 +35,32 @@ class Model
         $this->pk = 'id_' . $this->table;
         $this->schema = self::getSchema($table);
 
+        // si $json ne contient pas d'id, crée un nouvel id (nextGuid)
         if (!isset($json[$this->pk])) {
             $json[$this->pk] = self::nextGuid();
         }
 
+        // 3. ajoute à l'instance toutes les colonnes contenues dans $json 
+        // si elles sont présentes dans le schéma
+
+        // 4. complète le contenu de $json pour obtenir une instance 
+        // ayant les mêmes propriétés que le schéma (avec des valeurs par défaut si elles sont définit dans le schéma)
+
+        // (ex pour la table role, $json vaut ["title"=>"seller", "weight"=>2, "nimportequoi"=>"..."])
+        // seul title et weight existent dans la table (schema),
+        // $this->title = "seller" et $this->weight = 2
+
+        // ils sont donc ajoutés comme variable à l'instance
+        // n'importe quoi n'est pas gardé,
+
         foreach ($this->schema as $k => $v) {
+            
+            // Variable intermediaire push to $json ?
+            $this->$k = array_push($json, $k);
+
             if (isset($json[$k])) {
-                // $this->$k = $v;
-                // echo "$k : $v";
-            } 
+                // code
+            }
             
             elseif ($this->schema[$k]['nullable'] == 1 && $this->schema[$k]['default'] == '') {
                 // $this->$k = null;
@@ -97,14 +105,10 @@ class Model
 
             for ($i = 0; $i < $nToAdd; $i++) {
                 $valueToConvert = rand(1, 32);
+                // $valueToConvert = 10;
+
                 if ($valueToConvert == 10) {
-                    $valueToConvert = rand(1, 32);
-                    if ($valueToConvert == 10) {
-                        $valueToConvert = rand(1, 32);
-                        if ($valueToConvert == 10) {
-                            $valueToConvert = rand(1, 32);
-                        }
-                    }
+                    $valueToConvert = rand(1, 9);
                 }
                 $guidToAdd = base_convert($valueToConvert, 10, 32);
                 array_push($guidToArray, $guidToAdd);

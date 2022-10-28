@@ -101,6 +101,14 @@ class Initializer
                     $schemaTypesArray = $schema[$i];
                     
                     $typesValues = array_values($schemaTypesArray);
+                    foreach($typesValues as $e){
+                        if($e == "NO"){
+                            array_splice($typesValues, 3, 1, "0");
+                        }
+                        if($e == "YES"){
+                            array_splice($typesValues, 3, 1, "1");
+                        }
+                    }
 
                     $fileContent .= "        '" . strtolower($typesValues[0]) . "'" . ' => ' . "['type'" . " => " . "'" . $typesValues[1] . "', " . "'" . 'nullable' . "'" . ' => ' . "'" . $typesValues[3] . "', " . "'" . 'default' . "'" . ' => ' . "'" . $typesValues[5] . "'], \r";
                 }
