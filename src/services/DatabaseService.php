@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Models\ModelList;
 use PDO;
 use PDOException;
 
@@ -82,13 +83,105 @@ class DatabaseService
 
 
     /**
-    * Retourne la liste des colonnes d'une table (son schéma)
-    */
-    public function getSchemas(){
+     * Retourne la liste des colonnes d'une table (son schéma)
+     */
+    public function getSchemas()
+    {
         $schemas = [];
         $sql = "SHOW COLUMNS FROM $this->table";
         $resp = $this->query($sql);
         $schemas = $resp->statement->fetchAll(PDO::FETCH_CLASS);
         return $schemas;
+    }
+
+    public function insertOrUpdate(array $body): ?array
+    {
+        $insertOrUpdateList = [];
+
+        //créer un ModelList à partir du body de la requête
+        $modelList = new ModelList($this->table, $body);
+        //récupérer en DB les lignes de la table dont l'id est dans $modelList->items
+        $modelListIds = $modelList->idList();
+        $questionMarks = str_repeat("?,", count($modelListIds));
+        $questionMarks = "(" . trim($questionMarks, ",") . ")";
+        $where = $this->pk . " IN " . $questionMarks;
+        $existingRowsList = $this->selectWhere($where, $modelListIds);
+        //créer un ModelList avec les lignes existantes
+        $existingModelsList = new ModelList($this->table, $existingRowsList); //Totalité des lignes converties en modèle;
+
+        //construire la requête sql et le tableau de valeurs
+        //pour insérer les lignes qui n'existent pas en DB
+
+        //=> comparer les tableaux $modelList et $existingModelsList pour trouver :
+        // les models qui ne sont pas en BDD (ils doivent être insérés)
+        //array_diff()
+        $modelListToAdd = array_diff($modelList->data(), $existingModelsList->data());
+        foreach ($modelListToAdd as $model) {
+            //$model = un array associé où clé = colonne de la table et valeur = valeur pour chaque colonne
+            //boucler sur le modèle
+            $columns = "";
+            $values = "";
+            $valuesToBind = [];
+            foreach ($model as $key => $value) {
+                $columns .= $key . ",";
+                $values .= "?,";
+                array_push($valuesToBind, $value);
+            }
+            $columns = trim($columns, ',');
+            $values = trim($values, ',');
+            $sql = "INSERT INTO $this->table ($columns) VALUES ($values)";
+            $resp = $this->query($sql, $valuesToBind);
+            if ($resp->result && $resp->statement->rowCount() == 1) {
+                $insertedId = self::$connection->lastInsertId();
+                $row = $this->selectWhere("$this->pk = ?", [$insertedId]);
+                array_push($insertOrUpdateList, $row);
+            } else {
+                return null;
+            }
+        }
+
+        // Les models qui sont déjà en BDD (ils doivent être mis à jour)
+        //array_intersect()
+        $modelListToUpdate = array_intersect($modelList->data(), $existingModelsList->data());
+        
+        
+        foreach ($modelListToUpdate as $model) {
+            $columns = "";
+            $valuesToBind = [];
+            foreach($model as $col => $v) {
+                $columns .=$col.'=?,';
+                array_push($valuesToBind, $v);
+            }
+            array_push($valuesToBind, 0, $model[$this->pk]);
+            $columns = trim($columns, ',' );
+
+            $sql = "UPDATE $this->table SET $columns WHERE is_deleted = ? AND $this->pk = ?;";
+            $resp = $this->query($sql, $valuesToBind);
+            if($resp->result){
+                $row = $this->selectWhere("$this->pk = ?", [$model[$this->pk]]);
+                array_push($insertOrUpdateList, $row);
+                }
+            else{
+                return null;
+            }
+                
+        
+        }
+
+
+
+        //Lignes OK, essayer de construire requête SQL Insert Into, requête SQL Update
+
+        //construire la requête sql et le tableau des valeurs
+        //pour mettre à jour les lignes existantes en DB
+        //il est possible de ne faire qu'une seule requête
+        //pour la mise à jour et l'insertion
+        //INSERT ... ON DUPLICATE KEY UPDATE ...
+        //exécuter la ou les requête(s)
+        //renvoyer un tableau contenant toutes les lignes (insérées et mises à jour)
+        //renvoyer null si le résultat de la ou des requête(s) :
+        //$this->query($sql, $valuesToBind) vaut false
+
+        return $insertOrUpdateList;
     }
 }

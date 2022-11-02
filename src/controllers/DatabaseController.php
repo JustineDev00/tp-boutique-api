@@ -24,9 +24,8 @@ class DatabaseController
 
         $request_body = file_get_contents('php://input');
         $this->body = json_decode($request_body, true) ?: [];
-        
-        $this->action = $request->method;
 
+        $this->action = $request->method;
     }
 
     /**
@@ -50,5 +49,12 @@ class DatabaseController
         $dbs = new DatabaseService($this->table);
         $datas = $dbs->selectWhere(is_null($this->id) ?: "$this->pk= ?", [$this->id]);
         return $datas;
+    }
+
+    private function put(): ?array
+    {
+        $dbs = new DatabaseService($this->table);
+        $rows = $dbs->insertOrUpdate($this->body);
+        return $rows;
     }
 }

@@ -51,7 +51,7 @@ class Model
         $time = microtime(true) * 10000;
         $guid = base_convert($time, 10, 32);
         while (strlen($guid) < $length) {
-            $random = base_convert(random_int(0, 10), 10, 32);
+            $random = base_convert(random_int(0, 36), 10, 32);
             $guid .= $random;
         }
         return $guid;

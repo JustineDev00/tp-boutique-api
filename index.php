@@ -48,20 +48,29 @@ $result = Model::getSchema("role");
 
 //sprint 5 : test de la classe Model
 
-$testModel = new Model("article", ['title' => 'moule coeur', 'matiere' => 'silicone']);
-$testData = $testModel->data();
+// $testModel = new Model("article", ['title' => 'moule coeur', 'matiere' => 'silicone']);
+// $testData = $testModel->data();
 
 
 //sprint 5 : test de la classe Model List;
 
-$testModelList = new ModelList("article", [['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]); //créer un tableau de modèles d'une table donnée;
-$testModelListData = $testModelList->data(); //convertit la liste de modèles en tableau;
-$testModelListIds = $testModelList->idList(); //affiche la liste des ids des modèles de la liste;
-$testFindModel = $testModelList->findById($testModelListIds[0]);
+// $testModelList = new ModelList("article", [['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]); //créer un tableau de modèles d'une table donnée;
+// $testModelListData = $testModelList->data(); //convertit la liste de modèles en tableau;
+// $testModelListIds = $testModelList->idList(); //affiche la liste des ids des modèles de la liste;
+// $testFindModel = $testModelList->findById($testModelListIds[0]);
 //sélectionne dans la liste des modèles le modèle dont l'Id est égal à l'Id passée en paramètres;
-echo(json_encode($testFindModel->data()));
+// echo(json_encode($testFindModel->data()));
 
 
+//Tests sprint 6;
+$dbs = new DatabaseService("article");
+//insertion de 3 lignes => OK!!
+// $testSp6 = $dbs->insertOrUpdate([['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]);
+
+//test édition des lignes insérées:
+
+
+$testSp6Update = $dbs->insertOrUpdate([["Id_article" => "f54kucbsek5imkjp", 'title' => 'moule carré']]);
 
 
 
