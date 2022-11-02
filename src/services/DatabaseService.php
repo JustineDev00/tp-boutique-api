@@ -100,8 +100,8 @@ class DatabaseService
 
         //créer un ModelList à partir du body de la requête
         $modelList = new ModelList($this->table, $body);
-        //récupérer en DB les lignes de la table dont l'id est dans $modelList->items
-        $modelListIds = $modelList->idList();
+        //récupérer en DB les lignes de la table DONT l'id est dans $modelList->items
+        $modelListIds = $modelList->idList(); //liste des ids des modèles dans le corps de la requête;
         $questionMarks = str_repeat("?,", count($modelListIds));
         $questionMarks = "(" . trim($questionMarks, ",") . ")";
         $where = $this->pk . " IN " . $questionMarks;
@@ -112,10 +112,25 @@ class DatabaseService
         //construire la requête sql et le tableau de valeurs
         //pour insérer les lignes qui n'existent pas en DB
 
-        //=> comparer les tableaux $modelList et $existingModelsList pour trouver :
+        //=> lire les ids des lignes des tableaux $modelList et $existingModelsList 
+        
         // les models qui ne sont pas en BDD (ils doivent être insérés)
-        //array_diff()
-        $modelListToAdd = array_diff($modelList->data(), $existingModelsList->data());
+        $modelListToAdd = [];
+        // Les models qui sont déjà en BDD (ils doivent être mis à jour)
+        $modelListToUpdate = [];
+        foreach($modelList->data() as $model){
+            $id = $model[$this->pk];
+            foreach($existingModelsList->data() as $existingModel){
+                $existingModelId = $existingModel[$this->pk];
+                if($id === $existingModelId){
+                    array_push($modelListToUpdate, $model);
+                }
+                else{
+                    array_push($modelListToAdd, $model);
+                }
+            }
+        }
+
         foreach ($modelListToAdd as $model) {
             //$model = un array associé où clé = colonne de la table et valeur = valeur pour chaque colonne
             //boucler sur le modèle
@@ -140,25 +155,30 @@ class DatabaseService
             }
         }
 
-        // Les models qui sont déjà en BDD (ils doivent être mis à jour)
-        //array_intersect()
-        $modelListToUpdate = array_intersect($modelList->data(), $existingModelsList->data());
+        
+     
         
         
         foreach ($modelListToUpdate as $model) {
+            $id = $model[$this->pk];
+            unset($model[$this->pk]);
             $columns = "";
             $valuesToBind = [];
             foreach($model as $col => $v) {
+                if(!isset($v)){
+                    continue;
+                }
                 $columns .=$col.'=?,';
                 array_push($valuesToBind, $v);
             }
-            array_push($valuesToBind, 0, $model[$this->pk]);
+            array_push($valuesToBind, 0, $id);
             $columns = trim($columns, ',' );
 
             $sql = "UPDATE $this->table SET $columns WHERE is_deleted = ? AND $this->pk = ?;";
             $resp = $this->query($sql, $valuesToBind);
-            if($resp->result){
-                $row = $this->selectWhere("$this->pk = ?", [$model[$this->pk]]);
+            $rowCount = $resp->statement->rowCount();
+            if($resp->result && $rowCount == 1){
+                $row = $this->selectWhere("$this->pk = ?", [$id]);
                 array_push($insertOrUpdateList, $row);
                 }
             else{

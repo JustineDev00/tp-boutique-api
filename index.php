@@ -70,7 +70,7 @@ $dbs = new DatabaseService("article");
 //test édition des lignes insérées:
 
 
-$testSp6Update = $dbs->insertOrUpdate([["Id_article" => "f54kucbsek5imkjp", 'title' => 'moule carré']]);
+$testSp6Update = $dbs->insertOrUpdate([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 1kg"]]);
 
 
 
