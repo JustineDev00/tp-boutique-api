@@ -60,6 +60,7 @@ class Model
      * correspondant à $table sous forme de tableau associatif
      * (classe Schemas généré au sprint 4)
      */
+    
     public static function getSchema(string $table): array
     {
         $schemaName = "Schemas\\" . ucfirst($table);

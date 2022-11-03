@@ -12,9 +12,12 @@ use Services\DatabaseService;
 use Controllers\DatabaseController;
 use Tools\Initializer;
 use Models\Model;
+use Models\ModelList;
 
 $articleModel = new Model("article", ["title"=>"Une veste mauve"]);
 $articleData = $articleModel->data();
+$modelList = new ModelList("article", []);
+
 json_encode($articleData);
 
 $request = HttpRequest::instance();
