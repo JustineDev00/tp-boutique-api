@@ -22,7 +22,6 @@ class Initializer
         try {
             $arrayOfTables = self::writeTableFile();
             self::writeSchemasFiles($arrayOfTables, $isForce);
-            $model = new Model("account", []);
 
         } catch (Exception $e) {
             return false;
@@ -83,23 +82,18 @@ class Initializer
 
             $className = $table;
             $schemaFile = "src/Schemas/$className.php";
-
             $dbs = new DatabaseService();
-            $schema = $dbs->getSchema($table);
-            
+            $schema = $dbs->getSchema($table);          
             if (file_exists($schemaFile) && $isForce) {
-
                 $test = unlink($schemaFile);
                 if ($test == false) {
                     throw new Exception("Le fichier n'a pas pu être supprimé.");
                 }
             }
             if (!file_exists($schemaFile)) {
-
                 $fileContent = "<?php \r\rnamespace Schemas; \r\rclass " . ucfirst($className) . "{\r    const COLUMNS = [\r";
                 for ($i = 0; $i < count($schema); ++$i) {
-                    $schemaTypesArray = $schema[$i];
-                    
+                    $schemaTypesArray = $schema[$i];         
                     $typesValues = array_values($schemaTypesArray);
                     foreach($typesValues as $e){
                         if($e == "NO"){
@@ -109,11 +103,9 @@ class Initializer
                             array_splice($typesValues, 3, 1, "1");
                         }
                     }
-
                     $fileContent .= "        '" . strtolower($typesValues[0]) . "'" . ' => ' . "['type'" . " => " . "'" . $typesValues[1] . "', " . "'" . 'nullable' . "'" . ' => ' . "'" . $typesValues[3] . "', " . "'" . 'default' . "'" . ' => ' . "'" . $typesValues[5] . "'], \r";
                 }
                 $fileContent .= "    ];\r}";
-
                 $test = file_put_contents($schemaFile, $fileContent);
                 if ($test == false) {
                     throw new Exception("Le fichier n'a pas pu être écrit.");

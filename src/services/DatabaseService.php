@@ -57,11 +57,6 @@ class DatabaseService
         return (object)['result' => $result, 'statement' => $statement];
     }
 
-
-    /**
-     * Retourne la liste des tables en base de données sous forme de tableau
-     */
-
     public static function getTables(): array
     {
         $dbs = new DatabaseService();

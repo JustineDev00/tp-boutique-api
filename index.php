@@ -11,6 +11,11 @@ use Helpers\HttpResponse;
 use Services\DatabaseService;
 use Controllers\DatabaseController;
 use Tools\Initializer;
+use Models\Model;
+
+$articleModel = new Model("article", ["title"=>"Une veste mauve"]);
+$articleData = $articleModel->data();
+json_encode($articleData);
 
 $request = HttpRequest::instance();
 
