@@ -69,9 +69,12 @@ $dbs = new DatabaseService("article");
 
 //test édition des lignes insérées:
 
+// $testSp6Update = $dbs->insertOrUpdate([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 1kg"]]);
 
-$testSp6Update = $dbs->insertOrUpdate([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 1kg"]]);
-echo(json_encode($testSp6Update));
+//test ON DUPLICATE KEY
+
+$testSp6UpdateV2 = $dbs->insertOrUpdateV2([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 500g"], ['title' => 'rouleau à pâtisserie', "price" => "12.99"]]);
+echo(json_encode($testSp6UpdateV2));
 
 
 

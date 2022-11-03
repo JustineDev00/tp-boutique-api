@@ -113,19 +113,18 @@ class DatabaseService
         //pour insérer les lignes qui n'existent pas en DB
 
         //=> lire les ids des lignes des tableaux $modelList et $existingModelsList 
-        
+
         // les models qui ne sont pas en BDD (ils doivent être insérés)
         $modelListToAdd = [];
         // Les models qui sont déjà en BDD (ils doivent être mis à jour)
         $modelListToUpdate = [];
-        foreach($modelList->data() as $model){
+        foreach ($modelList->data() as $model) {
             $id = $model[$this->pk];
-            foreach($existingModelsList->data() as $existingModel){
+            foreach ($existingModelsList->data() as $existingModel) {
                 $existingModelId = $existingModel[$this->pk];
-                if($id === $existingModelId){
+                if ($id === $existingModelId) {
                     array_push($modelListToUpdate, $model);
-                }
-                else{
+                } else {
                     array_push($modelListToAdd, $model);
                 }
             }
@@ -155,37 +154,73 @@ class DatabaseService
             }
         }
 
-        
-     
-        
-        
+
+
+
+
         foreach ($modelListToUpdate as $model) {
             $id = $model[$this->pk];
             unset($model[$this->pk]);
             $columns = "";
             $valuesToBind = [];
-            foreach($model as $col => $v) {
-                if(!isset($v)){
+            foreach ($model as $col => $v) {
+                if (!isset($v)) {
                     continue;
                 }
-                $columns .=$col.'=?,';
+                $columns .= $col . '=?,';
                 array_push($valuesToBind, $v);
             }
             array_push($valuesToBind, 0, $id);
-            $columns = trim($columns, ',' );
+            $columns = trim($columns, ',');
 
             $sql = "UPDATE $this->table SET $columns WHERE is_deleted = ? AND $this->pk = ?;";
             $resp = $this->query($sql, $valuesToBind);
             $rowCount = $resp->statement->rowCount();
-            if($resp->result){
+            if ($resp->result) {
                 $row = $this->selectWhere("$this->pk = ?", [$id]);
                 array_push($insertOrUpdateList, $row);
                 return $insertOrUpdateList;
-                }
-                
-        
+            }
         }
+    }
 
-       
+    public function insertOrUpdateV2(array $body): ?array
+    {
+        $insertOrUpdateList = [];
+        $modelList = new ModelList($this->table, $body);
+        $modelListData = $modelList->data();
+        foreach ($modelListData as $model) {
+            //Une requête par modèle;
+            $columns = "";
+            $values = "";
+            $columnsForUpdate = "";
+            $valuesToBind = [];
+            foreach ($model as $col => $v) {
+                if (!isset($v)) {
+                    continue;
+                }
+                $columns .= $col . ",";
+                $values .= "?,";
+                $columnsForUpdate .= $col . '=?,';
+                array_push($valuesToBind, $v);
+            }
+            foreach($valuesToBind as $v){
+                array_push($valuesToBind, $v);
+            }
+            $columns = trim($columns, ',');
+            $values = trim($values, ',');
+            $columnsForUpdate = trim($columnsForUpdate, ',');
+            $sql = "INSERT INTO $this->table ($columns) VALUES ($values) ON DUPLICATE KEY UPDATE $columnsForUpdate";
+            $resp = $this->query($sql, $valuesToBind);
+            if ($resp->result) {
+                $row = $this->selectWhere("$this->pk = ?", [$model[$this->pk]]);
+                array_push($insertOrUpdateList, $row);
+            }
+            else{
+                echo("une erreur a eu lieu lors de la mise à jour de la base de données");
+            }
+
+        }
+        return $insertOrUpdateList;
     }
 }
