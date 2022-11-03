@@ -177,31 +177,15 @@ class DatabaseService
             $sql = "UPDATE $this->table SET $columns WHERE is_deleted = ? AND $this->pk = ?;";
             $resp = $this->query($sql, $valuesToBind);
             $rowCount = $resp->statement->rowCount();
-            if($resp->result && $rowCount == 1){
+            if($resp->result){
                 $row = $this->selectWhere("$this->pk = ?", [$id]);
                 array_push($insertOrUpdateList, $row);
+                return $insertOrUpdateList;
                 }
-            else{
-                return null;
-            }
                 
         
         }
 
-
-
-        //Lignes OK, essayer de construire requête SQL Insert Into, requête SQL Update
-
-        //construire la requête sql et le tableau des valeurs
-        //pour mettre à jour les lignes existantes en DB
-        //il est possible de ne faire qu'une seule requête
-        //pour la mise à jour et l'insertion
-        //INSERT ... ON DUPLICATE KEY UPDATE ...
-        //exécuter la ou les requête(s)
-        //renvoyer un tableau contenant toutes les lignes (insérées et mises à jour)
-        //renvoyer null si le résultat de la ou des requête(s) :
-        //$this->query($sql, $valuesToBind) vaut false
-
-        return $insertOrUpdateList;
+       
     }
 }

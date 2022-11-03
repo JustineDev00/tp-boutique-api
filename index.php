@@ -71,7 +71,7 @@ $dbs = new DatabaseService("article");
 
 
 $testSp6Update = $dbs->insertOrUpdate([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 1kg"]]);
-
+echo(json_encode($testSp6Update));
 
 
 
