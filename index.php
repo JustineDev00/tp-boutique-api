@@ -14,11 +14,11 @@ use Tools\Initializer;
 use Models\Model;
 use Models\ModelList;
 
-$articleModel = new Model("article", ["title"=>"Une veste mauve"]);
+$articleModel = new Model("article", ["title"=>"Une veste mauve", "content"=>"Une super veste", "price"=>"25,6", "stock"=>"20"]);
 $articleData = $articleModel->data();
-$modelList = new ModelList("article", []);
 
-json_encode($articleData);
+$modelList = new ModelList("article", []);
+json_encode($modelList);
 
 $request = HttpRequest::instance();
 
