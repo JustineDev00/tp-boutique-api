@@ -70,28 +70,12 @@ class Model
 
     private function nextGuid(int $length = 16): string
     {
-        $microTimeNumber = microtime(true);
-        $microTConverted = base_convert($microTimeNumber, 10, 32);
-        $guidToArray = str_split($microTConverted, 1);
-        $tabLength = count($guidToArray);
-        if ($tabLength < $length) {
-            $nToAdd = $length - $tabLength;
-            for ($i = 0; $i < $nToAdd; $i++) {
-                $valueToConvert = rand(1, 32);
-                if ($valueToConvert == 10) {
-                    $valueToConvert = rand(1, 9);
-                }
-                $guidToAdd = base_convert($valueToConvert, 10, 32);
-                array_push($guidToArray, $guidToAdd);
-            }
+        $time = microtime(true) * 10000;
+        $guid = base_convert($time, 10, 32);
+        while (strlen($guid) < $length) {
+            $random = base_convert(random_int(0, 10), 10, 32);
+            $guid .= $random;
         }
-        if ($tabLength > $length) {
-            $nToDelete = $tabLength - $length;
-            for ($i = 0; $i < $nToDelete; $i++) {
-                array_splice($guidToArray, 1, 1);
-            }
-        }
-        $guid = implode($guidToArray);
         return $guid;
     }
 

@@ -11,14 +11,31 @@ use Helpers\HttpResponse;
 use Services\DatabaseService;
 use Controllers\DatabaseController;
 use Tools\Initializer;
+
 use Models\Model;
 use Models\ModelList;
 
 $articleModel = new Model("article", ["title"=>"Une veste mauve", "content"=>"Une super veste", "price"=>"25,6", "stock"=>"20"]);
 $articleData = $articleModel->data();
 
-$modelList = new ModelList("article", []);
-json_encode($modelList);
+// ------------------- TEST ------------------------
+
+$list = [["title"=>"Une veste mauve", "content"=>"Une super veste", "price"=>"25,6", "stock"=>"20"], ["title"=>"Une veste jaune", "content"=>"Une moche veste", "price"=>"10,1", "stock"=>"100"]];
+
+$modelList = new ModelList("article", $list);
+
+$schema = $modelList::getSchema("article");
+$listData = $modelList->data();
+$listId = $modelList->idList();
+// $modelById = $modelList->findById("f5b09ccpq6210503");
+
+
+
+
+
+
+
+// --------------------------------------------------
 
 $request = HttpRequest::instance();
 
