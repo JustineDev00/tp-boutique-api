@@ -52,6 +52,16 @@ class ModelList
         return $dataList;
     }
 
+    public function dataV2() : array{
+        $dataList = [];
+        foreach($this->items as $item){
+            $modelData = $item->data();
+            array_push($dataList, $modelData);
+        }
+        return $dataList;
+
+    }
+
 
     /**
      * Renvoie la liste des id contenus dans $this->items

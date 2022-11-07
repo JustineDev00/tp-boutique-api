@@ -118,17 +118,25 @@ class DatabaseService
         $modelListToAdd = [];
         // Les models qui sont déjà en BDD (ils doivent être mis à jour)
         $modelListToUpdate = [];
-        foreach ($modelList->data() as $model) {
-            $id = $model[$this->pk];
-            foreach ($existingModelsList->data() as $existingModel) {
-                $existingModelId = $existingModel[$this->pk];
-                if ($id === $existingModelId) {
-                    array_push($modelListToUpdate, $model);
-                } else {
-                    array_push($modelListToAdd, $model);
+        if (count($existingModelsList->data()) === 0) {
+            $modelListToAdd = $modelList->data();
+        } else {
+            foreach ($modelList->data() as $model) {
+                $id = $model[$this->pk];
+                foreach ($existingModelsList->data() as $existingModel) {
+                    $existingModelId = $existingModel[$this->pk];
+                    if ($id === $existingModelId) {
+                        array_push($modelListToUpdate, $model);
+                    } else {
+                        array_push($modelListToAdd, $model);
+                    }
                 }
             }
         }
+
+
+
+
 
         foreach ($modelListToAdd as $model) {
             //$model = un array associé où clé = colonne de la table et valeur = valeur pour chaque colonne
@@ -145,18 +153,14 @@ class DatabaseService
             $values = trim($values, ',');
             $sql = "INSERT INTO $this->table ($columns) VALUES ($values)";
             $resp = $this->query($sql, $valuesToBind);
+           
             if ($resp->result && $resp->statement->rowCount() == 1) {
-                $insertedId = self::$connection->lastInsertId();
-                $row = $this->selectWhere("$this->pk = ?", [$insertedId]);
-                array_push($insertOrUpdateList, $row);
-            } else {
-                return null;
+                
+                $row = $this->selectWhere("$this->pk = ?", [$model[$this->pk]]);
+                array_push($insertOrUpdateList, $row[0]);
             }
+            
         }
-
-
-
-
 
         foreach ($modelListToUpdate as $model) {
             $id = $model[$this->pk];
@@ -178,10 +182,10 @@ class DatabaseService
             $rowCount = $resp->statement->rowCount();
             if ($resp->result) {
                 $row = $this->selectWhere("$this->pk = ?", [$id]);
-                array_push($insertOrUpdateList, $row);
-                return $insertOrUpdateList;
+                array_push($insertOrUpdateList, $row[0]);
             }
         }
+        return $insertOrUpdateList;
     }
 
     public function insertOrUpdateV2(array $body): ?array
@@ -204,7 +208,7 @@ class DatabaseService
                 $columnsForUpdate .= $col . '=?,';
                 array_push($valuesToBind, $v);
             }
-            foreach($valuesToBind as $v){
+            foreach ($valuesToBind as $v) {
                 array_push($valuesToBind, $v);
             }
             $columns = trim($columns, ',');
@@ -215,12 +219,55 @@ class DatabaseService
             if ($resp->result) {
                 $row = $this->selectWhere("$this->pk = ?", [$model[$this->pk]]);
                 array_push($insertOrUpdateList, $row);
+            } else {
+                echo ("une erreur a eu lieu lors de la mise à jour de la base de données");
             }
-            else{
-                echo("une erreur a eu lieu lors de la mise à jour de la base de données");
-            }
-
         }
         return $insertOrUpdateList;
+    }
+
+    public function softDelete(array $body): ?array
+    {
+        $modelList = new ModelList($this->table, $body);
+        $ids = $modelList->idList();
+        $questionMarks = str_repeat("?,", count($ids));
+        $questionMarks = "(" . trim($questionMarks, ",") . ")";
+        $sql = "UPDATE $this->table SET is_deleted = ? WHERE $this->pk IN $questionMarks";
+        $valuesToBind = [1];
+        foreach ($ids as $id) {
+            array_push($valuesToBind, $id);
+        }
+        $resp = $this->query($sql, $valuesToBind);
+        if ($resp->result) {
+            $where = "is_deleted = ? AND $this->pk IN $questionMarks";
+            $rows = $this->selectWhere($where, $valuesToBind);
+            return $rows;
+        }
+        return null;
+    }
+
+    /**
+     * permet la suppression (effective) d'une ou plusieurs lignes
+     * renvoie un tableau vide si la suppression est effective, sinon null
+     */
+    public function hardDelete(array $body): ?array
+    {
+        $modelList = new ModelList($this->table, $body);
+        $ids = $modelList->idList();
+        $questionMarks = str_repeat("?,", count($ids));
+        $questionMarks = "(" . trim($questionMarks, ",") . ")";
+        $sql = "DELETE FROM $this->table WHERE is_deleted = ? AND $this->pk IN $questionMarks";
+        $valuesToBind = [1];
+        foreach ($ids as $id) {
+            array_push($valuesToBind, $id);
+        }
+        $resp = $this->query($sql, $valuesToBind);
+        if($resp->result && $resp->statement->rowCount() <= count($ids)){
+            $where = "is_deleted =? AND $this->pk IN $questionMarks";
+            $rows = $this->selectWhere($where, $valuesToBind);
+            $rows['count'] = $resp->statement->rowCount();
+            return $rows;
+        }
+        return null;
     }
 }

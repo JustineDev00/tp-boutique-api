@@ -37,12 +37,15 @@ else {
 }
 $controller = new DatabaseController($request); //traitement de la requête;
 $result = $controller->execute();
+echo(json_encode($result));
+
+
 // if ($result) {
 //     HttpResponse::send(["data" => $result], 200);
 // }
 
 //sprint 5 : test de getSchema() de la classe Model
-$result = Model::getSchema("role");
+// $result = Model::getSchema("role");
 // $testGUID = Model::nextGuid();
 
 
@@ -63,7 +66,7 @@ $result = Model::getSchema("role");
 
 
 //Tests sprint 6;
-$dbs = new DatabaseService("article");
+// $dbs = new DatabaseService("article");
 //insertion de 3 lignes => OK!!
 // $testSp6 = $dbs->insertOrUpdate([['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]);
 
@@ -73,8 +76,10 @@ $dbs = new DatabaseService("article");
 
 //test ON DUPLICATE KEY
 
-$testSp6UpdateV2 = $dbs->insertOrUpdateV2([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 500g"], ['title' => 'rouleau à pâtisserie', "price" => "12.99"]]);
-echo(json_encode($testSp6UpdateV2));
+// $testSp6UpdateV2 = $dbs->insertOrUpdateV2([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 500g"], ['title' => 'colorant rouge', "price" => "3.99"]]);
+// echo(json_encode($testSp6UpdateV2));
 
-
+// $modelList = new ModelList("article",[["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 500g"], ['title' => 'colorant rouge', "price" => "3.99"]] );
+// $modelListData = $modelList->dataV2();
+// echo(json_encode($modelListData));
 
