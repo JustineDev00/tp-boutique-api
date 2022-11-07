@@ -29,48 +29,40 @@ class ModelList
         return $schemaName::COLUMNS;
     }
 
-    /**
-     * Même principe que pour Model mais sur une liste ($this->items)
-     */
-    public function data() // : array
+    // Même principe que pour Model mais sur une liste ($this->items)
+    public function data(): array
     {
         $data = [];
-
         foreach($this->items as $items){
             $cleanData = $items->data();
             array_push($data, $cleanData);
         }
-
         return $data;
     }
 
-    /**
-     * Renvoie la liste des id contenus dans $this->items
-     */
+    // Renvoie la liste des id contenus dans $this->items
     public function idList($key = null): array
     {
         $idList = [];
-
         if (!isset($key)) {
             $key = $this->pk;
         }
-
-        foreach($this->items as $items){
-            array_push($idList, $items->$key);
+        foreach($this->items as $item){
+            array_push($idList, $item->$key);
         }
-
         return $idList;
     }
 
-    /**
-     * Renvoie l'instance contenue dans $this->items correspondant à $id
-     */
+    // Renvoie l'instance contenue dans $this->items correspondant à $id
     public function findById($id): ?Model
     {
+        $key = $this->pk;
         foreach($this->items as $item){
 
+            if($item->$key == $id){
+                return $item;
+            }
         }
-
-        return $item;
+        return null;
     }
 }
