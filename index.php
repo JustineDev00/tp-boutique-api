@@ -29,22 +29,27 @@ if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'i
 // --------------------- Sprint 5 : Test de la classe Model -------------------------
 // ----------------------------------------------------------------------------------
 
-$articleModel = new Model("article", ["title"=>"Une veste mauve", "content"=>"Une super veste", "price"=>"25,6", "stock"=>"20"]);
-$articleData = $articleModel->data();
+// $articleModel = new Model("article", ["title"=>"Une veste mauve", "content"=>"Une super veste", "price"=>"25,6", "stock"=>"20"]);
+// $articleData = $articleModel->data();
 
 // ----------------------------------------------------------------------------------
 // --------------------- Sprint 5 : Test de la classe ModelList ---------------------
 // ----------------------------------------------------------------------------------
 
-$list = [["title"=>"Une veste mauve", "content"=>"Une super veste", "price"=>"25,6", "stock"=>"20"], ["title"=>"Une veste jaune", "content"=>"Une moche veste", "price"=>"10,1", "stock"=>"100"]];
-$modelList = new ModelList("article", $list);
+// $list = [["title"=>"Une veste mauve", "content"=>"Une super veste", "price"=>"25,6", "stock"=>"20"], ["title"=>"Une veste jaune", "content"=>"Une moche veste", "price"=>"10,1", "stock"=>"100"]];
+// $modelList = new ModelList("article", $list);
 
-$schema = $modelList::getSchema("article");
-$listData = $modelList->data();
-$listId = $modelList->idList();
+// $schema = $modelList::getSchema("article");
+// $listData = $modelList->data();
+// $listId = $modelList->idList();
 
-$modelById = $modelList->findById($listId[0]);
-$breakPoint = 0;
+// $modelById = $modelList->findById($listId[0]);
+// $breakPoint = 0;
+
+// ----------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------
+
 
 // Après l'initialisation si elle a eu lieu, le fichier regarde si la valeur de $request->route[0] 
 // correspond à une constante qui a été définie dans la classe Schemas/Tables;
