@@ -15,17 +15,12 @@ class HttpRequest
      */
     private function __construct()
     {
-        //voir $_SERVER['REQUEST_METHOD'] et $_SERVER["REQUEST_URI"]
         $request = $_SERVER['REQUEST_METHOD'] . "/" . filter_var(trim($_SERVER["REQUEST_URI"], '/'), FILTER_SANITIZE_URL);
-
         $requestArray = explode('/', $request);
-
         $this->method = array_shift($requestArray);
-
         if ($_ENV['env'] == 'dev' && $_SERVER['HTTP_HOST'] == 'localhost') {
             array_shift($requestArray);
         }
-
         $this->route = $requestArray;
     }
 

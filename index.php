@@ -65,6 +65,6 @@ if (!empty($request->route)) {
 $controller = new DatabaseController($request);
 $result = $controller->execute();
 
-// if ($result) {
-//     HttpResponse::send(["data" => $result], 200);
-// }
+if ($result) {
+    HttpResponse::send(["data" => $result], 200);
+}

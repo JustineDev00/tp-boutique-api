@@ -103,7 +103,7 @@ class Initializer
                             array_splice($typesValues, 3, 1, "1");
                         }
                     }
-                    $fileContent .= "        '" . strtolower($typesValues[0]) . "'" . ' => ' . "['type'" . " => " . "'" . $typesValues[1] . "', " . "'" . 'nullable' . "'" . ' => ' . "'" . $typesValues[3] . "', " . "'" . 'default' . "'" . ' => ' . "'" . $typesValues[5] . "'], \r";
+                    $fileContent .= "        '" . $typesValues[0] . "'" . ' => ' . "['type'" . " => " . "'" . $typesValues[1] . "', " . "'" . 'nullable' . "'" . ' => ' . "'" . $typesValues[3] . "', " . "'" . 'default' . "'" . ' => ' . "'" . $typesValues[5] . "'], \r";
                 }
                 $fileContent .= "    ];\r}";
                 $test = file_put_contents($schemaFile, $fileContent);

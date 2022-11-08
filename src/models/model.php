@@ -14,7 +14,7 @@ class Model
     public function __construct(string $table, array $json)
     {
         $this->table = $table;
-        $this->pk = 'id_' . $this->table;
+        $this->pk = 'Id_' . $this->table;
         $this->schema = self::getSchema($table);
 
         if (!isset($json[$this->pk])) {

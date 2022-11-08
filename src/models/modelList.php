@@ -13,10 +13,11 @@ class ModelList
     public function __construct(string $table, array $list)
     {
         $this->table = $table;
-        $this->pk = 'id_' . $this->table;
+        $this->pk = 'Id_' . $this->table;
         $this->items = [];
 
         foreach ($list as $json) {
+            $json = (array) $json;
             $model = new Model($table, $json);
             array_push($this->items, $model);
         }
