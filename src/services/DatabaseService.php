@@ -2,6 +2,8 @@
 
 namespace Services;
 
+use Models\Model;
+use Models\ModelList;
 use PDO;
 use PDOException;
 
@@ -86,4 +88,38 @@ class DatabaseService
         return $schema;
     }
 
+    public function insertOrUpdate(array $body): ?array
+    {
+        $modelList = new ModelList($this->table, $body['items']);
+        $inClause = trim(str_repeat("?,", count($modelList->items)), ",");
+        $existingRowsList = $this->selectWhere("$this->pk IN ($inClause)", $modelList->idList());
+        $existingModelList = new ModelList($this->table, $existingRowsList);
+        $valuesToBind = [];
+        foreach ($modelList->items as &$model) {
+            $existingModel = $existingModelList->findById($model->{$this->pk});
+            foreach ($body['items'] as $item) {
+                if (isset($item[$this->pk]) && $model->{$this->pk} == $item[$this->pk]) {
+                    $model = new Model($this->table, array_merge((array)$existingModel, $item));
+                }
+            }
+            $valuesToBind = array_merge($valuesToBind, array_values($model->data()));
+        }
+        $columns = array_keys(Model::getSchema($this->table));
+        $values = "(" . trim(str_repeat("?,", count($columns)), ',') . "),";
+        $valuesClause = trim(str_repeat($values, count($body["items"])), ',');
+        $columnsClause = implode(",", $columns);
+        $fieldsToUpdate = array_diff($columns, array($this->pk, "is_deleted"));
+        $updatesClause = "";
+        foreach ($fieldsToUpdate as $field) {
+            $updatesClause .= "$field = VALUES($field), ";
+        }
+        $updatesClause = rtrim($updatesClause, ", ");
+        $sql = "INSERT INTO $this->table ($columnsClause) VALUES $valuesClause ON DUPLICATE KEY UPDATE $updatesClause";
+        $resp = $this->query($sql, $valuesToBind);
+        if ($resp->result) {
+            $rows = $this->selectWhere("$this->pk IN ($inClause)", $modelList->idList());
+            return $rows;
+        }
+        return null;
+    }
 }
