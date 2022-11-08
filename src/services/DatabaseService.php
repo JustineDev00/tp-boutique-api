@@ -145,7 +145,9 @@ class DatabaseService
         $resp = $this->query($sql, $valuesToBind);
 
         if ($resp->result) {
+            // if (true)
             $rows = $this->selectWhere("$this->pk IN ($inClause)", $modelList->idList());
+            // $rows = Tableau contenant les deux Std Class
             return $rows;
         }
 
