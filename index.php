@@ -35,51 +35,19 @@ if (!empty($request->route)) {
 else {
     HttpResponse::exit(404); //erreur 404 si route vide
 }
-$controller = new DatabaseController($request); //traitement de la requête;
-$result = $controller->execute();
-echo(json_encode($result));
 
 
-// if ($result) {
-//     HttpResponse::send(["data" => $result], 200);
-// }
+//Token Tests
+use Helpers\Token;
+$tokenFromDataArray = Token::create(['name' => "Laurent", "id" => ""]);
+//crée un objet token depuis un tableau;
+$encoded = $tokenFromDataArray->encoded; 
+//récupère la valeur stockée dans "encoded" (le résultat de create)
 
-//sprint 5 : test de getSchema() de la classe Model
-// $result = Model::getSchema("role");
-// $testGUID = Model::nextGuid();
-
-
-//sprint 5 : test de la classe Model
-
-// $testModel = new Model("article", ['title' => 'moule coeur', 'matiere' => 'silicone']);
-// $testData = $testModel->data();
-
-
-//sprint 5 : test de la classe Model List;
-
-// $testModelList = new ModelList("article", [['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]); //créer un tableau de modèles d'une table donnée;
-// $testModelListData = $testModelList->data(); //convertit la liste de modèles en tableau;
-// $testModelListIds = $testModelList->idList(); //affiche la liste des ids des modèles de la liste;
-// $testFindModel = $testModelList->findById($testModelListIds[0]);
-//sélectionne dans la liste des modèles le modèle dont l'Id est égal à l'Id passée en paramètres;
-// echo(json_encode($testFindModel->data()));
-
-
-//Tests sprint 6;
-// $dbs = new DatabaseService("article");
-//insertion de 3 lignes => OK!!
-// $testSp6 = $dbs->insertOrUpdate([['title' => 'moule coeur'], ['title' => 'lot 12 emporte-pièces'], ['title' => 'pâte amandes 500g']]);
-
-//test édition des lignes insérées:
-
-// $testSp6Update = $dbs->insertOrUpdate([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 1kg"]]);
-
-//test ON DUPLICATE KEY
-
-// $testSp6UpdateV2 = $dbs->insertOrUpdateV2([["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 500g"], ['title' => 'colorant rouge', "price" => "3.99"]]);
-// echo(json_encode($testSp6UpdateV2));
-
-// $modelList = new ModelList("article",[["Id_article" => "f54kucbsfre554l13", 'title' => "pâte d'amandes 500g"], ['title' => 'colorant rouge', "price" => "3.99"]] );
-// $modelListData = $modelList->dataV2();
-// echo(json_encode($modelListData));
-
+$tokenFromEncodedString = Token::create($encoded);
+//creer un Token à partir de la string encodée;
+$decoded = $tokenFromEncodedString->decoded;
+//décode la string;
+$test = $tokenFromEncodedString->isValid();
+//vérifie la validité du token encodé;
+$bp = true;
