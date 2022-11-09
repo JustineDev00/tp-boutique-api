@@ -1,9 +1,0 @@
-{
-    "db": {
-        "host": "localhost",
-        "port": "3306",
-        "dbName": "tp-boutique",
-        "user": "root",
-        "pass": ""
-    }
-}
