@@ -50,6 +50,13 @@ if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'i
 // ----------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------
 
+use Helpers\Token;
+$tokenFromDataArray = Token::create(['name' => "Laurent", 'id' => 1234]);
+$encoded = $tokenFromDataArray->encoded;
+$tokenFromEncodedString = Token::create($encoded);
+$decoded = $tokenFromEncodedString->decoded;
+$test = $tokenFromEncodedString->isValid();
+$bp = true;
 
 // Après l'initialisation si elle a eu lieu, le fichier regarde si la valeur de $request->route[0] 
 // correspond à une constante qui a été définie dans la classe Schemas/Tables;

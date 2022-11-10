@@ -76,9 +76,6 @@ class DatabaseService
         return $rows;
     }
 
-    /**
-     * Retourne la liste des colonnes d'une table (son schéma)
-     */
     public function getSchema($table)
     {
         $schema = [];
@@ -91,7 +88,7 @@ class DatabaseService
     public function insertOrUpdate(array $body): ?array
     {
         $modelList = new ModelList($this->table, $body['items']);
-        $inClause = trim(str_repeat("?,", count($modelList->items)), ","); 
+        $inClause = trim(str_repeat(" ?,", count($modelList->items)), ","); 
         // $inClause = "?,?"
         $existingRowsList = $this->selectWhere("$this->pk IN ($inClause)", $modelList->idList());
         // $existingRowsList = Les lignes existantes en bdd qui correspondent aux id's d'idList()
@@ -126,7 +123,7 @@ class DatabaseService
         // Implode rassemble les éléments d'un tableau en une chaîne de caractères. String separator + array
         // $columnClause = Id_article,title,content,price ...
         $fieldsToUpdate = array_diff($columns, array($this->pk, "is_deleted"));
-        // array_diff() compare le tableau $columns avec le 2ème tableau et retourne les valeurs du tableau array 
+        // array_diff() compare le tableau $columns avec le 2ème tableau et retourne les valeurs du tableau $columns 
         // qui ne sont pas présentes dans l'autre tableau.
         $updatesClause = "";
 
@@ -154,20 +151,42 @@ class DatabaseService
         return null;
     }
 
-    /**
-     * permet la suppression (is_deleted = 1) d'une ou plusieurs lignes
-     * renvoie les lignes deleted sous forme de tableau
-     * si la mise à jour s'est bien passé (sinon null)
-     */
-    public function softDelete(): ?array
+    public function softDelete(array $body): ?array
     {
-        $rows = [];
-        $sql = 0;
-        $valuesToBind = [];
-
+        $modelList = new ModelList($this->table, $body['items']);
+        $ids = $modelList->idList();
+        $questionMarks = str_repeat("?,", count($ids));
+        $questionMarks = "(" . trim($questionMarks, ",") . ")";
+        $sql = "UPDATE $this->table SET is_deleted = ? WHERE $this->pk IN $questionMarks";
+        $valuesToBind = [1];
+        foreach ($ids as $id) {
+            array_push($valuesToBind, $id);
+        }
         $resp = $this->query($sql, $valuesToBind);
         if ($resp->result) {
-            // $rows = 
+            $where = "is_deleted = ? AND $this->pk IN $questionMarks";
+            $rows = $this->selectWhere($where, $valuesToBind);
+            return $rows;
+        }
+        return null;
+    }
+
+    public function hardDelete(array $body): ?array
+    {
+        $modelList = new ModelList($this->table, $body['items']);
+        $ids = $modelList->idList();
+        $questionMarks = str_repeat("?,", count($ids));
+        $questionMarks = "(" . trim($questionMarks, ",") . ")";
+        $sql = "DELETE FROM $this->table WHERE is_deleted = ? AND $this->pk IN $questionMarks";
+        $valuesToBind = [1];
+        foreach ($ids as $id) {
+            array_push($valuesToBind, $id);
+        }
+        $resp = $this->query($sql, $valuesToBind);
+        if($resp->result && $resp->statement->rowCount() <= count($ids)){
+            $where = "is_deleted = ? AND $this->pk IN $questionMarks";
+            $rows = $this->selectWhere($where, $valuesToBind);
+            $rows['count'] = $resp->statement->rowCount();
             return $rows;
         }
         return null;

@@ -32,8 +32,8 @@ class DatabaseController
     public function execute(): ?array
     {
 
-        // $result = self::get();
-        $result = self::put();
+        $action = strtolower($this->action);
+        $result = self::$action();
         return $result;
     }
 
@@ -61,7 +61,13 @@ class DatabaseController
     private function patch()
     {
         $dbs = new DatabaseService($this->table);
-        $rows = $dbs->softDelete();
+        $rows = $dbs->softDelete($this->body);
+        return $rows;
+    }
+
+    private function delete() : ?array{
+        $dbs = new DatabaseService($this->table);
+        $rows = $dbs->hardDelete($this->body);
         return $rows;
     }
 }
