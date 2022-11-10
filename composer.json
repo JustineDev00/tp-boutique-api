@@ -1,0 +1,13 @@
+{
+    "name": "justi/tp-boutique-api",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^6.6"
+    },
+    "authors": [
+        {
+            "name": "JustineDev00",
+            "email": "dev.justine.verin@gmail.com"
+        }
+    ]
+}
