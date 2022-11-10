@@ -44,12 +44,12 @@ class MailerService{
             $this->mailer->AltBody = $altBody;
             $result = $this->mailer->send();
             if($result){
-                return ["result" => true];
+                return ["result" => true, "message" => "un email a été envoyé à votre adresse $destAddresses[0] :)"];
             }
         }catch(Exception $e){
             $error = $e;
         }
-        return ["result" => false, "error" => $this->mailer->ErrorInfo . "\r\n" . ($error ?? "")];
+        return ["result" => false, "error" => $this->mailer->ErrorInfo . "\r\n" . ($error ?? ""), "message" => "Une erreur inattendue est survenue lors de l'envoi du mail :("];
 
     }
 

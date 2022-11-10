@@ -65,6 +65,7 @@ $mailParams =  [
     "altBody" => "Merci de votre attention. àâä éèêë ìîï òôö ùûü"
 ];
 $sent = $testMail->send($mailParams);
+echo($sent['message']);
 
 $bp = true;
 
