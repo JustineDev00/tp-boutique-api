@@ -1,19 +1,21 @@
 <?php
 
 $env = 'dev';
-$_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
+$_ENV['config'] = json_decode(file_get_contents("src/configs/" . $env . ".config.json"));
 $_ENV['env'] = $env;
 
 require_once 'autoload.php';
+require_once 'vendor/autoload.php';
+
 
 use Helpers\HttpRequest;
 use Helpers\HttpResponse;
 use Services\DatabaseService;
+use Services\MailerService;
 use Controllers\DatabaseController;
 use Models\Model;
 use Models\ModelList;
 use Tools\Initializer;
-
 
 $request = HttpRequest::instance();
 if ($_ENV['env'] == "dev" && !empty($request->route) && $request->route[0] == 'init') {
@@ -50,4 +52,20 @@ $decoded = $tokenFromEncodedString->decoded;
 //décode la string;
 $test = $tokenFromEncodedString->isValid();
 //vérifie la validité du token encodé;
+
+
+//Mailer test
+$testMail = new MailerService();
+$mailParams =  [
+    "fromAddress" => ["newsletter@maboutique.com", "newsletter maboutique.com"],
+    "destAddresses" => ["dev.justine.verin@gmail.com"],
+    "replyAddress" => ['info@maboutique.com', "information maboutique.com"],
+    "subject" => "Attention",
+    "body" => "Merci de votre <b>attention</b>. àâä éèêë ìîï òôö ùûü.",
+    "altBody" => "Merci de votre attention. àâä éèêë ìîï òôö ùûü"
+];
+$sent = $testMail->send($mailParams);
+
 $bp = true;
+
+

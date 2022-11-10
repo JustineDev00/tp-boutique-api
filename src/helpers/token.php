@@ -65,7 +65,7 @@ class Token
         $payload = base64_encode($payload); //payload = $decoded après stringification + encodage;
         $signature = password_hash($payload, PASSWORD_BCRYPT, ['cost' => 8]);  //signature = $payload hashé !! enlever le préfixe!!!
         $signature = str_replace(Token::$prefix, "", $signature);
-        $spacer = $_ENV['jwt']['spacer'];
+        $spacer = $_ENV['config']->jwt->spacer;
         $encoded = $payload . $spacer . $signature; //$payload + caractère remarquable + $signature
         $this->encoded = urlencode($encoded); //$this->encoded correspond à $encoded  => nécessité d'utiliser urlencode pour le passer dans une url
     }
@@ -77,7 +77,7 @@ class Token
     {
         $this->encoded = $encoded;
         $tokenString = urldecode($this->encoded);
-        $spacer = $_ENV['jwt']['spacer'];
+        $spacer = $_ENV['config']->jwt->spacer;
         $tokenArray = explode($spacer, $tokenString);
         $payload = $tokenArray[0];
         $signature = $tokenArray[1];
