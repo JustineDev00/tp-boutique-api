@@ -41,7 +41,7 @@ else {
 
 //Token Tests
 use Helpers\Token;
-$tokenFromDataArray = Token::create(['name' => "Laurent", "id" => ""]);
+$tokenFromDataArray = Token::create(['message' => "Connor loves Hank", "id" => ""]);
 //crée un objet token depuis un tableau;
 $encoded = $tokenFromDataArray->encoded; 
 //récupère la valeur stockée dans "encoded" (le résultat de create)
@@ -52,7 +52,7 @@ $decoded = $tokenFromEncodedString->decoded;
 //décode la string;
 $test = $tokenFromEncodedString->isValid();
 //vérifie la validité du token encodé;
-
+$bp = true;
 
 //Mailer test
 $testMail = new MailerService();

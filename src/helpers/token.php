@@ -8,6 +8,7 @@ class Token
 {
     private static $prefix = "$2y$08$"; //bcrypt (salt = 8) //va servir au décodage
     private static $defaultValidity = 60 * 60 * 1; //1h
+    private static $separator = "|"; //caractère remarquable de séparation
     private function __construct()
     {
         $args = func_get_args();
@@ -54,19 +55,19 @@ class Token
             $decoded['nbf'] = isset($decoded['createdAt']) ? $decoded['createdAt'] : time();
         }
         if(!isset($decoded["validity"])){
-            $decoded['val'] = Token::$defaultValidity;
+            $decoded['val'] = self::$defaultValidity;
         }
         if(!isset($decoded['expireAt'])){
-            $decoded['exp'] = isset($decoded['iat']) ? $decoded['iat'] + Token::$defaultValidity : time() + Token::$defaultValidity;
+            $decoded['exp'] = isset($decoded['iat']) ? $decoded['iat'] + Token::$defaultValidity : time() + self::$defaultValidity;
         }
         $this->decoded = $decoded;
         $payload = json_encode($this->decoded);
         // stringification  ===> nécessite de garder les clés + les valeurs == json_encode;
         $payload = base64_encode($payload); //payload = $decoded après stringification + encodage;
-        $signature = password_hash($payload, PASSWORD_BCRYPT, ['cost' => 8]);  //signature = $payload hashé !! enlever le préfixe!!!
-        $signature = str_replace(Token::$prefix, "", $signature);
-        $spacer = $_ENV['config']->jwt->spacer;
-        $encoded = $payload . $spacer . $signature; //$payload + caractère remarquable + $signature
+        $signature = password_hash($payload . self::$separator . $_ENV['config']->jwt->secret, PASSWORD_BCRYPT, ['cost' => 8]);  //signature = $payload hashé !! enlever le préfixe!!!
+        $signature = str_replace(self::$prefix, "", $signature);
+       
+        $encoded = $payload . self::$separator . $signature; //$payload + caractère remarquable + $signature
         $this->encoded = urlencode($encoded); //$this->encoded correspond à $encoded  => nécessité d'utiliser urlencode pour le passer dans une url
     }
     /**
@@ -77,11 +78,12 @@ class Token
     {
         $this->encoded = $encoded;
         $tokenString = urldecode($this->encoded);
-        $spacer = $_ENV['config']->jwt->spacer;
-        $tokenArray = explode($spacer, $tokenString);
+        
+        $tokenArray = explode(self::$separator, $tokenString);
         $payload = $tokenArray[0];
         $signature = $tokenArray[1];
-        $signature = password_verify($payload, Token::$prefix . $signature);  //vérifie que la signature correspond bien au $payload hashé
+       
+        $signature = password_verify($payload . self::$separator . $_ENV['config']->jwt->secret, self::$prefix . $signature);  //vérifie que la signature correspond bien au $payload hashé
         if($signature){
             $payload = base64_decode($payload);
             $payload = json_decode($payload, true);
