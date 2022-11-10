@@ -41,7 +41,7 @@ else {
 
 //Token Tests
 use Helpers\Token;
-$tokenFromDataArray = Token::create(['message' => "Connor loves Hank", "id" => ""]);
+$tokenFromDataArray = Token::create(["pseudo" => "Laurent", "id" => ""]);
 //crée un objet token depuis un tableau;
 $encoded = $tokenFromDataArray->encoded; 
 //récupère la valeur stockée dans "encoded" (le résultat de create)
