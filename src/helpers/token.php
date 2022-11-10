@@ -26,8 +26,8 @@ class Token {
         
     }
 
-    public array $decoded; //stocke le tableau de données
-    public string $encoded; //stocke le token
+    public array $decoded; // Stocke le tableau de données
+    public string $encoded; // Stocke le token
     public static function create($entry) : Token
     {
         return new Token($entry);

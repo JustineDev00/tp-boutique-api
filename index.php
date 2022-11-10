@@ -2,6 +2,8 @@
 
 // http://boutique-api/role
 
+// nnjcznzailrgdzxu
+
 $env = 'dev';
 $_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
 $_ENV['env'] = $env;
@@ -51,8 +53,10 @@ if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'i
 // ----------------------------------------------------------------------------------
 
 use Helpers\Token;
+// Créer un Token à partir d'un tableau associatif 
 $tokenFromDataArray = Token::create(['name' => "Laurent", 'id' => 1234]);
 $encoded = $tokenFromDataArray->encoded;
+
 $tokenFromEncodedString = Token::create($encoded);
 $decoded = $tokenFromEncodedString->decoded;
 $test = $tokenFromEncodedString->isValid();
