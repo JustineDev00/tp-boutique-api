@@ -48,16 +48,16 @@ class Token
         
         // TO DO : ajouter à $decoded les entrées createdAt, usableAt, validity and expireAt si elles n'existent pas
         if(!isset($decoded["createdAt"])){
-            $decoded['createdAt'] = time();
+            $decoded['iat'] = time();
         }
         if(!isset($decoded["usableAt"])){
-            $decoded['usableAt'] = isset($decoded['createdAt']) ? $decoded['createdAt'] : time();
+            $decoded['nbf'] = isset($decoded['createdAt']) ? $decoded['createdAt'] : time();
         }
         if(!isset($decoded["validity"])){
-            $decoded['validity'] = Token::$defaultValidity;
+            $decoded['val'] = Token::$defaultValidity;
         }
         if(!isset($decoded['expireAt'])){
-            $decoded['expireAt'] = $decoded['createdAt'] + Token::$defaultValidity;
+            $decoded['exp'] = isset($decoded['iat']) ? $decoded['iat'] + Token::$defaultValidity : time() + Token::$defaultValidity;
         }
         $this->decoded = $decoded;
         $payload = json_encode($this->decoded);
@@ -65,7 +65,8 @@ class Token
         $payload = base64_encode($payload); //payload = $decoded après stringification + encodage;
         $signature = password_hash($payload, PASSWORD_BCRYPT, ['cost' => 8]);  //signature = $payload hashé !! enlever le préfixe!!!
         $signature = str_replace(Token::$prefix, "", $signature);
-        $encoded = $payload . "XXXX" . $signature; //$payload + caractère remarquable + $signature
+        $spacer = $_ENV['jwt']['spacer'];
+        $encoded = $payload . $spacer . $signature; //$payload + caractère remarquable + $signature
         $this->encoded = urlencode($encoded); //$this->encoded correspond à $encoded  => nécessité d'utiliser urlencode pour le passer dans une url
     }
     /**
@@ -76,7 +77,8 @@ class Token
     {
         $this->encoded = $encoded;
         $tokenString = urldecode($this->encoded);
-        $tokenArray = explode("XXXX", $tokenString);
+        $spacer = $_ENV['jwt']['spacer'];
+        $tokenArray = explode($spacer, $tokenString);
         $payload = $tokenArray[0];
         $signature = $tokenArray[1];
         $signature = password_verify($payload, Token::$prefix . $signature);  //vérifie que la signature correspond bien au $payload hashé
@@ -98,8 +100,8 @@ class Token
         }
         if ($withDate) {
             $decoded = $this->decoded;
-            $expDate = $decoded['expireAt'];
-            $usableAt = $decoded['usableAt'];
+            $expDate = $decoded['exp'];
+            $usableAt = $decoded['nbf'];
             if(!isset($usableAt) || !isset($expDate) || $usableAt > time() || $expDate < time()){
                 //si pas de date d'utilisation, d'expiration, que le token n'est pas encore utilisable ($usableAt est dans le futur) ou que le token a expiré ($expDate est dans le passé)
                 return false;
