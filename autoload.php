@@ -1,5 +1,7 @@
 <?php
 
+// require "./vendor/autoload.php";
+
 // spl_autoload_register enregisre des fonctions et les charges automatiquement;
 // les fonctions : c'est charger des fichiers (require this, require that);
 // Nom du namespace === nom du dossier
@@ -13,10 +15,17 @@ function loadFiles($className)
         require_once $classPath;
     }
 
+    // $classPath = "vendor\\" . strtolower($className) . ".php";
+    // if (file_exists($classPath)) {
+    //     require_once $classPath;
+    // }
+
     $toolsPath = strtolower($className) . ".php";
     if (file_exists($toolsPath)) {
         require_once $toolsPath;
     }
+
+    // require "./vendor/autoload.php";
 }
 
 spl_autoload_register("loadFiles");

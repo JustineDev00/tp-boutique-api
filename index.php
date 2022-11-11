@@ -2,11 +2,13 @@
 
 // http://boutique-api/role
 
-// nnjcznzailrgdzxu
+// $env = 'dev';
+// $_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
+// $_ENV['env'] = $env;
 
-$env = 'dev';
-$_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
-$_ENV['env'] = $env;
+$_ENV["current"] = "dev";
+$config = file_get_contents("src/configs/" . $_ENV["current"] . ".config.json");
+$_ENV['config'] = json_decode($config);
 
 require_once 'autoload.php';
 
@@ -25,6 +27,13 @@ if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'i
         HttpResponse::send(["message" => "Api Initialized"]);
     }
     HttpResponse::send(["message" => "Api Not Initialized, try again ..."]);
+}
+
+// ------------------------ Test du mailerService ----------------------------------
+
+if ($_ENV['current'] == 'dev' && !empty($request->route) && $request->route[0] == 'test') {
+    $dbs = new DatabaseController($request);
+    $dbs->sendTestMail();
 }
 
 // ----------------------------------------------------------------------------------
@@ -63,7 +72,7 @@ $test = $tokenFromEncodedString->isValid();
 $bp = true;
 
 // Après l'initialisation si elle a eu lieu, le fichier regarde si la valeur de $request->route[0] 
-// correspond à une constante qui a été définie dans la classe Schemas/Tables;
+// Correspond à une constante qui a été définie dans la classe Schemas/Tables;
 
 if (!empty($request->route)) {
 
@@ -73,7 +82,6 @@ if (!empty($request->route)) {
     if (!defined($key)) { // Si la valeur n'existe pas dans constante : erreur 404;
         HttpResponse::exit(404);
     }
-
 } else {
     HttpResponse::exit(404);
 }

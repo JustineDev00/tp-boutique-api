@@ -1,14 +1,18 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+namespace Services;
 
-class MailerService{
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+
+class MailerService {
 
     public function __construct($profil = "main")
     {
         $config = $_ENV["config"]->mailer->{$profil};
+        require "./vendor/phpmailer/phpmailer/src/PHPMailer.php";
         $mailer = new PHPMailer(true);
+        // $mailer->addAttachment();
         $mailer->isSMTP();
         $mailer->Host = $config->host;
         $mailer->Port = $config->port;
@@ -35,24 +39,25 @@ class MailerService{
             foreach($destAddresses as $destAddress){
                 $this->mailer->addAddress($destAddress);
             }
-            $this->mailer->addReplyTo($replyAddress[0], $fromAddress[1]);
-            $this->mailer->isHTML(true);
+            require "./vendor/phpmailer/phpmailer/src/Exception.php";
+            require "./vendor/phpmailer/phpmailer/src/SMTP.php";
+
+            // $this->mailer->addReplyTo($replyAddress[0], $fromAddress[1]);
+            // $this->mailer->isHTML(true);
+
             $this->mailer->Subject = $subject;
-            $this->mailer->Body    = $body;
+            $this->mailer->Body = $body;
             $this->mailer->AltBody = $altBody;
             $result = $this->mailer->send();
             if($result){
                 return ["result" => true];
             }
         }
+
         catch(Exception $e){
             $error = $e;
         }
+
         return ["result" => false, "error" => $this->mailer->ErrorInfo . "\r\n" . ($error ?? "")];
-        
     }
-
-
-
-
 }

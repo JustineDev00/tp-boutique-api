@@ -4,6 +4,7 @@ namespace Controllers;
 
 use Services\DatabaseService;
 use Helpers\HttpRequest;
+use Services\MailerService;
 
 class DatabaseController
 {
@@ -69,5 +70,18 @@ class DatabaseController
         $dbs = new DatabaseService($this->table);
         $rows = $dbs->hardDelete($this->body);
         return $rows;
+    }
+
+    function sendTestMail(){
+        $ms = new MailerService();
+        $mailParams = [
+            "fromAddress" => ["blog@gmail.com","newsletter monblog.com"],
+            "destAddresses" => ["itstompearson.contact@gmail.com"],
+            "replyAddress" => ["blog@gmail@gmail.com", "information monblog.com"],
+            "subject" => "Newsletter nomblog.com",
+            "body" => "This is the HTML message sent by <b>monblog.com</b>",
+            "altBody" => "This is the plain text message for non-HTML mail clients"
+        ];
+        return $ms->send($mailParams);
     }
 }
