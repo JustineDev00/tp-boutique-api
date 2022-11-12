@@ -6,7 +6,7 @@
 // $_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
 // $_ENV['env'] = $env;
 
-$_ENV["current"] = "dev";
+$_ENV['current'] = 'dev';
 $config = file_get_contents("src/configs/" . $_ENV["current"] . ".config.json");
 $_ENV['config'] = json_decode($config);
 
@@ -22,7 +22,7 @@ use Models\ModelList;
 
 $request = HttpRequest::instance();
 
-if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'init') {
+if ($_ENV['current'] == 'dev' && !empty($request->route) && $request->route[0] == 'init') {
     if (Initializer::start($request)) {
         HttpResponse::send(["message" => "Api Initialized"]);
     }
