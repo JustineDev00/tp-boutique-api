@@ -2,13 +2,13 @@
 
 // http://boutique-api/role
 
-// $env = 'dev';
-// $_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
-// $_ENV['env'] = $env;
+$env = 'dev';
+$_ENV = json_decode(file_get_contents("src/configs/" . $env . ".config.json"), true);
+$_ENV['env'] = $env;
 
-$_ENV['current'] = 'dev';
-$config = file_get_contents("src/configs/" . $_ENV["current"] . ".config.json");
-$_ENV['config'] = json_decode($config);
+// $_ENV['current'] = 'dev';
+// $config = file_get_contents("src/configs/" . $_ENV["current"] . ".config.json");
+// $_ENV['config'] = json_decode($config);
 
 require_once 'autoload.php';
 
@@ -22,7 +22,7 @@ use Models\ModelList;
 
 $request = HttpRequest::instance();
 
-if ($_ENV['current'] == 'dev' && !empty($request->route) && $request->route[0] == 'init') {
+if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'init') {
     if (Initializer::start($request)) {
         HttpResponse::send(["message" => "Api Initialized"]);
     }
@@ -31,7 +31,7 @@ if ($_ENV['current'] == 'dev' && !empty($request->route) && $request->route[0] =
 
 // ------------------------ Test du mailerService ----------------------------------
 
-if ($_ENV['current'] == 'dev' && !empty($request->route) && $request->route[0] == 'test') {
+if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'test') {
     $dbs = new DatabaseController($request);
     $dbs->sendTestMail();
 }
