@@ -23,7 +23,7 @@ class DatabaseService
 
     {
         if (self::$connection == null) {
-            $dbConfig = $_ENV['db'];
+            $dbConfig = $_ENV['config']['db'];
             $host = $dbConfig["host"];
             $port = $dbConfig["port"];
             $dbName = $dbConfig["dbName"];
@@ -76,7 +76,7 @@ class DatabaseService
     {
         $sql = "SELECT * FROM $this->table WHERE $where;";
         $resp = $this->query($sql, $bind);
-        $rows = $resp->statement->fetchAll(PDO::FETCH_CLASS);
+        $rows = $resp->statement->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
 
