@@ -1,4 +1,8 @@
 <?php namespace helpers;
+// namespace utility ->
+// Ils permettent une meilleure organisation en regroupant des classes qui travaillent ensemble pour effectuer une tâche
+// Ils permettent d'utiliser le même nom pour plusieurs classes
+
 
 class HttpResponse{
 

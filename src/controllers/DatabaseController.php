@@ -1,54 +1,61 @@
-<?php
+<?php namespace Controllers;
 
-namespace Controllers;
-
+use helpers\HttpRequest;
+use Helpers\HttpRequestHelper;
 use Services\DatabaseService;
-use Helpers\HttpRequest;
 
-class DatabaseController
-{
-
-    private string $table;
-    private string $pk;
-    private ?string $id;
-    private array $body;
-    private string $action;
-
-    public function __construct(HttpRequest $request)
-    {
-        $this->table = $request->route[0];
-
-        $this->pk = "Id_" . $this->table; // Clé
-
-        $this->id = isset($request->route[1]) ? $request->route[1] : null; // Valeur
-
-        $request_body = file_get_contents('php://input');
-        $this->body = json_decode($request_body, true) ?: [];
-        
-        $this->action = $request->method;
-
-    }
-
-    /**
-     * Retourne le résultat de la méthode ($action) exécutée
-     */
-    public function execute(): ?array
-    {
-        $result = self::get();
-        return $result;
-    }
-
-    /**
-     * Action exécutée lors d'un GET
-     * Retourne le résultat du selectWhere de DatabaseService
-     * soit sous forme d'un tableau contenant toutes le lignes (si pas d'id)
-     * soit sous forme du tableau associatif correspondant à une ligne (si id)
-     */
-
-    private function get(): ?array
-    {
-        $dbs = new DatabaseService($this->table);
-        $datas = $dbs->selectWhere(is_null($this->id) ?: "$this->pk= ?", [$this->id]);
-        return $datas;
-    }
+class DatabaseController {
+  
+  private string $table;
+  private string $pk;
+  private ?string $id;
+  private array $body;
+  private string $action;
+  
+  public function __construct(HttpRequest $request) {
+    $this->table = $request->route[0];
+    $this->pk = "Id_$this->table";
+    
+    $this->id = isset($request->route[1]) ? $request->route[1] : null;
+    
+    $this->body = json_decode(file_get_contents('php://input'), true) ?: [];
+    
+    $this->action = $request->method;
+  }
+  
+  public function execute() : ?array {
+    return $this->{$this->action}();
+  }
+  
+  public function get(): ?array {
+    $dbs = new DatabaseService($this->table);
+    
+    $resp = $dbs->selectWhere(is_null($this->id) ?: "$this->pk=?", [$this->id]);
+    
+    return $resp;
+  }
+  
+  public function put(): ?array {
+    $dbs = new DatabaseService($this->table);
+    $rows = $dbs->insertOrUpdate($this->body);
+    
+    return $rows;
+  }
+  
+  public function patch(): ?array {
+    $dbs = new DatabaseService($this->table);
+    $rows = $dbs->softDelete($this->body);
+    
+    return $rows;
+  }
+  
+  public function delete(): ?array {
+    $dbs = new DatabaseService($this->table);
+    $rows = $dbs->hardDelete($this->body);
+    
+    return $rows;
+  }
+  
 }
+
+?>
